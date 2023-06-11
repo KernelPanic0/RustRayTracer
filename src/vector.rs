@@ -43,6 +43,11 @@ impl Vector3 {
         let length = len_squared.sqrt();
         length
     }
+
+    pub fn dot(&self, v: Vector3) -> f32 {
+        return self.x * v.x + self.y * v.y + self.z * v.z;
+    }
+
     pub fn unit_vector(&self) -> Self {
         *self / self.length()
     }

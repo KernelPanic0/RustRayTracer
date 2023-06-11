@@ -7,8 +7,19 @@ use winconsole;
 
 use crate::vector::Point3;
 
+fn hit_sphere(center: Point3, radius: f32, ray: &Ray) -> bool {
+    let oc: Vector3 = ray.origin() - center;
+    let a = ray.direction().dot(ray.direction());
+    let b = 2.0 * oc.dot(ray.direction());
+    let c = oc.dot(oc) - radius*radius;
+    let discriminant = b*b - 4f32*a*c;
+    discriminant > 0f32
+}
 
-fn ray_colour(ray: Ray) -> Colour3 { // Function for generating background
+fn ray_colour(ray: Ray) -> Colour3 { // Colour of ray
+    if (hit_sphere(Point3::new(0f32, 0f32, -1f32), 0.5, &ray)) {
+        return Colour3::new(1f32, 0f32, 0f32);
+    }
     let unit_direction = ray.direction().unit_vector(); // Turn Vector from regular vector to fixed length unit vector (max size is 1, completely directional)
     let t = 0.5*(unit_direction.y() + 1.0); // Normalises the range from -1 - 1 to 0 - 1. This will help with the gradient process
     let result = Colour3::new(1.0, 1.0, 1.0)*(1.0 - t) + Colour3::new(0.5, 0.7, 1.0)*t; // Linearly blend white and blue depending on y coordinate. Aka a Lerp.
@@ -19,7 +30,7 @@ fn main() {
     env::set_var("RUST_BACKTRACE", "1"); // Debugging
     //Image
     let aspect_ratio: f32 = 16.0 / 9.0;
-    let image_width: i32 = 400;
+    let image_width: i32 = 3840;
     let image_height = (image_width as f32 / aspect_ratio);
 
     let mut test_vector: Vector3 = Vector3::new(0f32, 0f32, 0f32);
